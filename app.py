@@ -1,7 +1,14 @@
 from flask import *
 import pymysql
+import re
+from werkzeug.security import generate_password_hash
+from mpesa import *
+
 
 app = Flask(__name__)
+
+# session key
+app.secret_key = "qq@%^&*()"
 
 @app.route("/")
 def Homepage():
@@ -73,14 +80,90 @@ def singleP(product_id):
     return render_template("single.html", phone = phone)
 
 
+def is_valid_password(password):
+    # Password should be at least 8 characters long and contain:
+    # - At least one uppercase letter
+    # - At least one lowercase letter
+    # - At least one digit
+    # - At least one special character
+    if (len(password) < 6 or
+        re.search(r"[A-Z]", password) or
+        re.search(r"[a-z]", password) or
+        re.search(r"[!@#$%^&*(),.?\":{}|<>]", password) or
+        re.search(r"[0-9]", password)):
+        return True
+    return False
 
-@app.route("/register")
+
+@app.route("/register", methods =['POST','GET'])
 def register():
-    return "This is register page"
+    if request.method == 'POST':
+        # user can add the products
+        
+        username = request.form['username']
+        email = request.form['email']
+        gender = request.form['gender']
+        phone = request.form['phone']
+        password = request.form['password']
 
-@app.route("/login")
+#         hashed_password = generate_password_hash(password)
+
+
+#         response = is_valid_password(password)
+#         if response ==True:
+#             # password met all the condition
+        
+#         else:
+#             # password did not meet all cond
+#             return render_template("register.html", message = "registrstin successful")
+#     else:
+
+
+#         # Validate password
+#         if not is_valid_password(password):
+#             return render_template("register.html", error='Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.')
+     
+# # conn to db
+        connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+# create  a cursor
+        cursor = connection.cursor()
+        sql = "insert into users (username, email, gender, phone, password) values (%s, %s, %s, %s, %s)"
+        
+        data = (username, email, gender, phone, password)
+     #execute 
+        cursor.execute(sql, data)
+        
+        # save changes 
+        connection.commit()
+
+        return redirect("/login")
+
+    else:
+        return render_template("register.html", error = 'Please register')
+
+@app.route("/login", methods =['POST', 'GET'])
 def login():
-    return "This is login page"
+     if request.method == 'POST':
+        # user can add the products
+        email = request.form['email']
+        password = request.form['password']
+
+        connection = pymysql.connect(host='localhost', user = 'root', password='', database="jumiya")
+        cursor = connection.cursor()
+        sql = "Select * from users where email = %s and password = %s"
+        data = (email, password)
+
+        cursor.execute(sql, data)
+
+        if cursor.rowcount == 0:
+            return render_template("login.html", error = "invalid login credentials")
+        else:
+            session['key'] = email
+            return redirect("/")
+     else:
+        return render_template("login.html")
+            
+
 
 # fashion route helps you see all the fashions
 
@@ -111,7 +194,6 @@ def fashion():
      cursor3.execute(sql3)
      cursor4.execute(sql4)
      
-
 
     # get all the phones
 
@@ -154,11 +236,28 @@ def uploadFashion():
 
     else:
         return render_template("uploadfashion.html", error = 'Please add a fashion')
+    
+
+# mpesa
+# implement STK PUSH
+@app.route("/mpesa", methods=['POST'])
+def mpesa():
+    phone = request.form["phone"]
+    amount = request.form["amount"]
+
+    # use mpesa_payment function from mpesa.py
+    #  it accepts the phone and amount as arguments
+    mpesa_payment(amount, phone)
+    return '<h1> Please Complete Payment in your phone </h1>'\
+    ' <a href="/" class="btn btn-dark btn-sm" >Go Back to products</a> '
+
 
 
 @app.route("/logout")
 def logout():
-    return "This is logout page"
+    session.clear()  
+  
+    return redirect("/login")
 
 
 @app.route("/upload", methods =['POST', 'GET'])
@@ -193,3 +292,4 @@ def upload():
 
 if __name__== "__main__":
     app.run(debug=True, port=4001)
+
