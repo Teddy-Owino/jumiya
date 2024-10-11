@@ -13,7 +13,7 @@ app.secret_key = "qq@%^&*()"
 @app.route("/")
 def Homepage():
     # establish to your db
-    connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+    connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell@@', database= 'Teddy97$default')
     sql = "SELECT * FROM `products` WHERE `product_category` = 'phones'"
     sql1 = "SELECT * FROM `products` WHERE `product_category` = 'electronics'"
     sql2 = "SELECT * FROM `products` WHERE `product_category` = 'beauty'"
@@ -65,7 +65,7 @@ def Aboutpage():
 @app.route("/single/<product_id>")
 def singleP(product_id):
     # connection to db
-    connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+    connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell@@', database= 'Teddy97$default')
     # create sql query
     sql = "SELECT * FROM `products` WHERE `product_id` = %s "
 
@@ -124,7 +124,7 @@ def register():
 #             return render_template("register.html", error='Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.')
      
 # # conn to db
-        connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+        connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell', database= 'Teddy97$default')
 # create  a cursor
         cursor = connection.cursor()
         sql = "insert into users (username, email, gender, phone, password) values (%s, %s, %s, %s, %s)"
@@ -148,7 +148,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        connection = pymysql.connect(host='localhost', user = 'root', password='', database="jumiya")
+        connection = pymysql.connect(host='localhost', user = 'root', password='@@mitchell@@', database="Teddy97$default")
         cursor = connection.cursor()
         sql = "Select * from users where email = %s and password = %s"
         data = (email, password)
@@ -169,7 +169,7 @@ def login():
 
 @app.route("/fashion")
 def fashion():
-     connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+     connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell@@', database= 'Teddy97$default')
      sql = "SELECT * FROM `products` WHERE `product_category` = 'dresses'"
      sql1 = "SELECT * FROM `products` WHERE `product_category` = 'handbags'"
      sql2 = "SELECT * FROM `products` WHERE `product_category` = 'socks'"
@@ -220,7 +220,7 @@ def uploadFashion():
         product_image_name = request.files['product_image_name']
         product_image_name.save('static/images/' + product_image_name.filename)
 # conn to db
-        connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+        connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell@@', database= 'Teddy97$default')
 # create  a cursor
         cursor = connection.cursor()
         sql = "insert into products (product_name, product_desc, product_cost, product_category, product_image_name) values (%s, %s, %s, %s, %s)"
@@ -271,7 +271,7 @@ def upload():
         product_image_name = request.files['product_image_name']
         product_image_name.save('static/images/' + product_image_name.filename)
 # conn to db
-        connection= pymysql.connect(host= 'localhost', user='root', password='', database= 'jumiya')
+        connection= pymysql.connect(host= 'localhost', user='root', password='@@mitchell@@', database= 'Teddy97$default')
 # create  a cursor
         cursor = connection.cursor()
         sql = "insert into products (product_name, product_desc, product_cost, product_category, product_image_name) values (%s, %s, %s, %s, %s)"
